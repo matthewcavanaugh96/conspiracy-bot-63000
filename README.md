@@ -1,0 +1,1 @@
+This project is intended to be satirical in nature. Care has been taken to ensure it is humorous rather than harmful. The creator does not endorse any statements below and rejects violence and hatred.
