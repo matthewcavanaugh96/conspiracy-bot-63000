@@ -1,8 +1,5 @@
 Ideas and Issues
 
-ISSUE
-GitHub warned me about my OpenAI key. Is this any danger? Should I instead have it reference a text file stored outside my repository?
-
 QUESTION - Not a flaw but maybe an aesthetic choice
 To save space on screen, should my "facts list" reference a separate text file?
 
