@@ -5,3 +5,7 @@ To save space on screen, should my "facts list" reference a separate text file?
 
 IDEA
 Build a dataframe that compiles instructions, questions, and responses for each run. May make sense to do this on a separate notebook.
+
+
+IDEA
+Post to a Twitter account?? Another API to figure out.
