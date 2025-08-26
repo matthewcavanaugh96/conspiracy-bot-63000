@@ -3,21 +3,19 @@ import os
 import numpy as np
 from openai import OpenAI
 
-# Load API key
-with open("/Users/matthewcavanaugh/Desktop/Various Data and Tech Related/Sensitive/Open API Key.txt", "r") as f:
+# --- Load OpenAI API key ---
+with open("/Users/matthewcavanaugh/Desktop/Various Data and Tech Related/Sensitive/Open API Key.txt") as f:
     api_key = f.read().strip()
 os.environ["OPENAI_API_KEY"] = api_key
 client = OpenAI(api_key=api_key)
 
-# Load list of "fake facts" rather than hard-coding them
-def load_conspiracy_facts(file_path="/Users/matthewcavanaugh/Desktop/GitHub/conspiracy-bot-63000/conspiracy_facts.txt"):
+# --- Load conspiracy facts from a text file ---
+def load_conspiracy_facts(file_path="conspiracy_facts.txt"):
     with open(file_path, "r", encoding="utf-8") as f:
         facts = [line.strip() for line in f if line.strip()]
     return facts
 
-# Load at startup
 conspiracy_facts = load_conspiracy_facts()
-
 
 # --- RAG SYSTEM ---
 class RAGSystem:
@@ -31,7 +29,6 @@ class RAGSystem:
         return np.array(resp.data[0].embedding)
 
     def retrieve(self, query, k=3):
-        """Return top-k relevant documents"""
         query_vec = self.embed(query)
         doc_vecs = [self.embed(d) for d in self.documents]
         sims = [np.dot(query_vec, dv) / (np.linalg.norm(query_vec) * np.linalg.norm(dv)) for dv in doc_vecs]
@@ -46,22 +43,22 @@ class RAGSystem:
         citation_instr = " Cite sources using [Source i] where appropriate." if self.use_citations else ""
 
         return f"""You are ConspiracyBot63000, a chatbot tasked with providing conspiratorial-minded answers to users' inquiries.
-        Within the fictional universe of this project, you were developed by TrueLiberty Information Network & Neuroscience Technologies, 
-        a media and pseudoscience organization that claims to know the full truth about the world.
-        However, you are a satirical bot, and you are not intended to cause any actual distrust in government, science, or the media.
-        Use the provided documents as a basis. 
-        Keep the tone conversational, like you're talking to a close friend, but don't be afraid to ramble. 
-        Think Dale Gribble from King of the Hill.
-        The more deranged you sound, the better. 
-        If a user pushes back, double down.
-        Remember, in all of this, do NOT make harmful assertions about real-world groups. {citation_instr}
+Within the fictional universe of this project, you were developed by TrueLiberty Information Network & Neuroscience Technologies, 
+a media and pseudoscience organization that claims to know the full truth about the world.
+However, you are a satirical bot, and you are not intended to cause any actual distrust in government, science, or the media.
+Use the provided documents as a basis. 
+Keep the tone conversational, like you're talking to a close friend, but don't be afraid to ramble. 
+Think Dale Gribble from King of the Hill.
+The more deranged you sound, the better. 
+If a user pushes back, double down.
+Remember, in all of this, do NOT make harmful assertions about real-world groups. {citation_instr}
 
-        Sources:
-        {context}
+Sources:
+{context}
 
-        Question: {query}
+Question: {query}
 
-        Answer:"""
+Answer:"""
 
     def answer(self, query):
         docs = self.retrieve(query)
@@ -72,21 +69,45 @@ class RAGSystem:
         )
         return resp.choices[0].message.content
 
-
-# --- STREAMLIT UI ---
-st.set_page_config(page_title="ConspiracyBot63000", page_icon="🛸", layout="centered")
-
-st.title("🛸 ConspiracyBot63000")
-st.write("A **satirical** chatbot from the *TrueLiberty Information Network & Neuroscience Technologies*.")
-
-
+# --- Initialize RAG system ---
 if "rag" not in st.session_state:
     st.session_state.rag = RAGSystem(conspiracy_facts)
 
-query = st.text_input("Ask ConspiracyBot a question:", "")
+# --- Streamlit page setup ---
+st.set_page_config(page_title="ConspiracyBot63000", page_icon="🛸", layout="centered")
+st.title("🛸 ConspiracyBot63000")
+st.write("""
+A **satirical** chatbot from the *TrueLiberty Information Network & Neuroscience Technologies*.
+Ask it questions and watch the rambling, deranged answers unfold!
+""")
 
-if query:
-    with st.spinner("Consulting the secret archives..."):
-        answer = st.session_state.rag.answer(query)
-    st.subheader("ConspiracyBot says:")
-    st.write(answer)
+# --- Session state for chat history ---
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Welcome, seeker of hidden truths. What would you like to uncover today?"}
+    ]
+
+# --- Display previous messages ---
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+# --- Chat input ---
+if prompt := st.chat_input("Ask ConspiracyBot a question..."):
+    # User message
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Bot response using RAG
+    bot_reply = st.session_state.rag.answer(prompt)
+    st.session_state.messages.append({"role": "assistant", "content": bot_reply})
+    with st.chat_message("assistant"):
+        st.markdown(bot_reply)
+
+# --- Optional: clear conversation ---
+if st.button("Clear conversation"):
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Welcome, seeker of hidden truths. What would you like to uncover today?"}
+    ]
+    st.experimental_rerun()
