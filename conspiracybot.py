@@ -10,7 +10,7 @@ os.environ["OPENAI_API_KEY"] = api_key
 client = OpenAI(api_key=api_key)
 
 # --- Load conspiracy facts from a text file ---
-def load_conspiracy_facts(file_path="conspiracy_facts.txt"):
+def load_conspiracy_facts(file_path="conspiracy_facts_v2.txt"):
     with open(file_path, "r", encoding="utf-8") as f:
         facts = [line.strip() for line in f if line.strip()]
     return facts
