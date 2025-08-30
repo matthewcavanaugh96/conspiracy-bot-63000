@@ -1,0 +1,36 @@
+﻿Problem Statement
+Conspiracy theories have become more prevalent. While some are clearly satirical, many are sincerely believed. Accordingly, there have been massive increases in distrust towards science, government, media, and even fellow ordinary citizens. Occasionally, these beliefs result in violence, such as in 2016 when a man shot up a pizza parlor in the belief that a sex trafficking ring was being run out of its basement.
+
+
+Goals
+Partly to draw attention to this serious issue, but also partly for comedic purposes, I set out to build a chatbot that would generate intentionally outlandish conspiracy theories, and argue with a user if they tried to push back.
+
+
+Methodology: Tools, datasets, models used
+Using Python in a Jupyter Notebook.
+I built a Retrieval-Augmented Generative (RAG) Model using GPT-4o through the OpenAI API. As a knowledge base I created a list of fake “facts” on which the bot would build its logic. Once I had the bot working as intended, I transferred it to a .py app.
+
+
+I also a notebook in the guise of a “press release” from the fictional company that created this bot, and added quotes and pictures to increase the comedy factor. 
+
+
+Challenges faced and how they were addressed.
+In a world where conspiracy theories have caused real violence, care must be taken to not cause harm. Through research I found that most chatbots will not intentionally mislead a user into damaging beliefs about real-world people or groups. Considering these ethical concerns I adjusted my instructions to make it clearer to the bot that it was satirical, and added a disclaimer.
+
+
+It was also a struggle to get the model to think independently as I desired. I initially made the “fact list” too long, and it was just spitting out what I had come up with. This was part of trying to make this a “comedic” project, though I hope that aspect is preserved.
+
+
+I created multiple versions of the instructions and context, ranging from sparse to more detailed. For tuning, I conducted testing in a separate notebook in which I exported instructions, context version, questions, and responses into a CSV file for comparison until the output was as desired.
+
+
+I also had to be mindful of keeping personal information secure. Ultimately, I decided to store my API Keys in a text file stored outside the repository.
+
+
+Results and evaluation
+I ultimately built a functioning RAG chatbot with a simple but clean-looking interface.
+The app version is somewhat slower than the initial version I built in a .ipynb notebook.
+
+
+Future improvements or extensions
+The bot is a little on the slow side for the time being, so I hope to improve performance. If I were to host this app on the web, I would have to find another method for calling the API key while keeping it secret. In the future, it would be interesting to add a text-to-voice feature - I would hope to find a converational-sounding TTS voice to capture the intended tone. I would also like to try different agents, such as Copilot or Grok. Perhaps I could even have multiple agents interact with each other and try to get them to out-do each other.
